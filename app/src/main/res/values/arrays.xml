@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="words">
+        <item>storm</item>
+        <item>current</item>
+        <item>tender</item>
+        <item>sofa</item>
+        <item>finished</item>
+        <item>peak</item>
+        <item>distort</item>
+        <item>hunter</item>
+        <item>concede</item>
+        <item>high</item>
+        <item>sour</item>
+    </string-array>
+</resources>
