@@ -1,9 +1,8 @@
 package com.example.hangman3;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG ="debugLetters" ;
     public static final String EXTRA_MESSAGE = "com.example.hangman3.MESSAGE";
     public static final String EXTRA_MESSAGE2 = "com.example.hangman3.MESSAGE2";
+    public static final String EXTRA_MESSAGE3 = "com.example.hangman3.MESSAGE3";
     Integer imageArray[] = {
             R.drawable.hangman1,
             R.drawable.hangman2,
@@ -46,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
     Random random = new Random();
     ImageView img;
     TextView textView;
+    TextView timer;
+    final Handler hand = new Handler();
+    int count;
+    String countString;
 
 
 
@@ -57,10 +63,13 @@ public class MainActivity extends AppCompatActivity {
         img = findViewById(R.id.imageView);
         img.setImageResource(imageArray[fails]);
 
+        timer = findViewById(R.id.timer);
+
         textView = findViewById(R.id.textView);
         guessedWordChar.clear();
         words = getResources().getStringArray(R.array.words);
         currentWord = words[random.nextInt(words.length)];
+        count = 60;
 
         for (int i = 0; i < currentWord.length(); i++) {
 
@@ -69,6 +78,37 @@ public class MainActivity extends AppCompatActivity {
         guessedWord = TextUtils.join(" ",guessedWordChar);
         textView.setText(guessedWord);
 
+    }
+    Runnable run = new Runnable() {
+
+        @Override
+        public void run() {
+            if(count == 0) { //will end if count reach 30 which means 30 second
+                countString="0";
+                startResult();
+            }
+            else
+            {
+                count -= 1; //add 1 every second
+                countString = Integer.toString(count);
+                timer.setText("timer: "+countString+"sec");
+                hand.postDelayed(run, 1000); //will call the runnable after 1 second
+
+            }
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        hand.postDelayed(run, 1000);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        hand.removeCallbacks(run);
     }
 
     public void checkLetter(View view) {
@@ -80,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         rightLetter = false;
         duplicateLetter = false;
 
-        while (true) {
+        while (true) { //TODO: figure out a better way to exit the method
             if (currentLetter.isEmpty()) {
                 Toast.makeText(getApplicationContext(),"Shits empty",Toast.LENGTH_SHORT).show();
                 break;
@@ -90,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 startResult();
 
 
-                // TODO: Switch to results screen
+
             }
 
             currentLetterChar = currentLetter.charAt(0);
@@ -122,13 +162,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "checkLetter: fails "+fails);
                 guessedLetters = guessedLetters + currentLetterChar;
                 try {
-                    if (fails == 11) {
+                    if (fails == 9) {
                         Toast.makeText(getApplicationContext(),"you lose",Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "checkLetter: loss");
                         startResult();
 
 
-                        // TODO: Switch to results screen
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -144,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"YOU WINNER!",Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "checkLetter5: win");
                 startResult();
-                // TODO: Switch to results screen
+
             }
             break;
 
@@ -154,8 +194,10 @@ public class MainActivity extends AppCompatActivity {
     public void startResult() {
         Intent intent = new Intent(this, ResultsActivity.class);
         String failsString = Integer.toString(fails);
+
         intent.putExtra(EXTRA_MESSAGE,failsString);
         intent.putExtra(EXTRA_MESSAGE2, guessedLetters);
+        intent.putExtra(EXTRA_MESSAGE3, countString);
         startActivity(intent);
         }
 
