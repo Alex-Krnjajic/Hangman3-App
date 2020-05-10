@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG ="debugLetters" ;
+    private static final String TAG = "debugLetters";
     public static final String EXTRA_MESSAGE = "com.example.hangman3.MESSAGE";
     public static final String EXTRA_MESSAGE2 = "com.example.hangman3.MESSAGE2";
     public static final String EXTRA_MESSAGE3 = "com.example.hangman3.MESSAGE3";
@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     String countString;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,23 +74,22 @@ public class MainActivity extends AppCompatActivity {
 
             guessedWordChar.add('_');
         }
-        guessedWord = TextUtils.join(" ",guessedWordChar);
+        guessedWord = TextUtils.join(" ", guessedWordChar);
         textView.setText(guessedWord);
 
     }
+
     Runnable run = new Runnable() {
 
         @Override
         public void run() {
-            if(count == 0) { //will end if count reach 30 which means 30 second
-                countString="0";
+            if (count == 0) { //will end if count reach 30 which means 30 second
+                countString = "0";
                 startResult();
-            }
-            else
-            {
+            } else {
                 count -= 1; //add 1 every second
                 countString = Integer.toString(count);
-                timer.setText("timer: "+countString+"sec");
+                timer.setText("timer: " + countString + "sec");
                 hand.postDelayed(run, 1000); //will call the runnable after 1 second
 
             }
@@ -116,59 +114,59 @@ public class MainActivity extends AppCompatActivity {
         currentLetter = editText.getText().toString();
         editText.getText().clear();
         currentLetter = currentLetter.toLowerCase();
+        Log.d(TAG, "checkLetter: " + currentLetter);
 
         rightLetter = false;
         duplicateLetter = false;
 
         while (true) { //TODO: figure out a better way to exit the method
             if (currentLetter.isEmpty()) {
-                Toast.makeText(getApplicationContext(),"Shits empty",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Shits empty", Toast.LENGTH_SHORT).show();
                 break;
             }
-            if (currentLetter.equals(currentWord)){
-                Toast.makeText(getApplicationContext(),"YOU WINNER!",Toast.LENGTH_SHORT).show();
-                startResult();
-
-
-
-            }
-
-            currentLetterChar = currentLetter.charAt(0);
-            Log.d(TAG, "checkLetter1: "+currentLetter);
-            if (guessedLetters.contains(currentLetter)){
-                Toast.makeText(getApplicationContext(),"you have already guessed this letter1",Toast.LENGTH_SHORT).show();
-                break;
-            }
-            for (int i = 0; i < currentWord.length(); i++) {
-
-                if (currentLetterChar == currentWord.charAt(i)) {
-                    if (currentLetterChar == guessedWordChar.get(i)) {
-                        duplicateLetter = true;
-                    } else {
-                        guessedWordChar.set(i, currentLetterChar);
-                        Toast.makeText(getApplicationContext(),"correct guess",Toast.LENGTH_SHORT).show();
-                        rightLetter = true;
-                    }
+            if (currentLetter.length() > 1) {
+                if (currentLetter.contains(currentWord)) {
+                    startResult();
+                } else {
+                    Toast.makeText(getApplicationContext(), "wrong word", Toast.LENGTH_SHORT).show();
+                    fails++;
                 }
+            } else {
 
-            }
-            Log.d(TAG, "checkLetter2: "+guessedWordChar);
-            if (duplicateLetter){
-                Toast.makeText(getApplicationContext(),"you have already guessed this letter2",Toast.LENGTH_SHORT).show();
-                break;
+                currentLetterChar = currentLetter.charAt(0);
+                Log.d(TAG, "checkLetter1: " + currentLetter);
+                if (guessedLetters.contains(currentLetter)) {
+                    Toast.makeText(getApplicationContext(), "you have already guessed this letter", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                for (int i = 0; i < currentWord.length(); i++) {
+
+                    if (currentLetterChar == currentWord.charAt(i)) {
+                        if (currentLetterChar == guessedWordChar.get(i)) {
+                            duplicateLetter = true;
+                        } else {
+                            guessedWordChar.set(i, currentLetterChar);
+                            Toast.makeText(getApplicationContext(), "correct guess", Toast.LENGTH_SHORT).show();
+                            rightLetter = true;
+                        }
+                    }
+
+                }
+                Log.d(TAG, "checkLetter2: " + guessedWordChar);
+                if (duplicateLetter) {
+                    Toast.makeText(getApplicationContext(), "you have already guessed this letter2", Toast.LENGTH_SHORT).show();
+                    break;
+                }
             }
             if (!rightLetter) {
                 fails++;
-                Log.d(TAG, "checkLetter: fails "+fails);
+                Log.d(TAG, "checkLetter: fails " + fails);
                 guessedLetters = guessedLetters + currentLetterChar;
                 try {
                     if (fails == 9) {
-                        Toast.makeText(getApplicationContext(),"you lose",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "you lose", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "checkLetter: loss");
                         startResult();
-
-
-
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -176,12 +174,12 @@ public class MainActivity extends AppCompatActivity {
                 img.setImageResource(imageArray[fails]);
             }
             Log.d(TAG, "checkLetter3: rightLetter = " + rightLetter);
-            guessedWord = TextUtils.join(" ",guessedWordChar);
+            guessedWord = TextUtils.join(" ", guessedWordChar);
             textView.setText(guessedWord);
-            guessedWordComp = TextUtils.join("",guessedWordChar);
+            guessedWordComp = TextUtils.join("", guessedWordChar);
             Log.d(TAG, "checkLetter4: " + currentWord + " = " + guessedWordComp);
             if (currentWord.equals(guessedWordComp)) {
-                Toast.makeText(getApplicationContext(),"YOU WINNER!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "YOU WINNER!", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "checkLetter5: win");
                 startResult();
 
@@ -191,14 +189,15 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
     public void startResult() {
         Intent intent = new Intent(this, ResultsActivity.class);
         String failsString = Integer.toString(fails);
 
-        intent.putExtra(EXTRA_MESSAGE,failsString);
+        intent.putExtra(EXTRA_MESSAGE, failsString);
         intent.putExtra(EXTRA_MESSAGE2, guessedLetters);
         intent.putExtra(EXTRA_MESSAGE3, countString);
         startActivity(intent);
-        }
+    }
 
 }
