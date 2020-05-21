@@ -1,10 +1,15 @@
 # Hangman3
 
 FEATURES:
+
 an amazing 3!!! screens
+
 11! words to guess
+
 a timer to keep up the tension
+
 a highly accurate depiction of the hanging process(hand drawn) 
+
 personalized statistics to help you perfect your hanging
 
 
